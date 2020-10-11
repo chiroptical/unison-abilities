@@ -1,0 +1,63 @@
+%\PassOptionsToPackae{gray}{xcolor}
+\documentclass[hyperref={pdfpagelabels=false},12pt]{beamer}
+\setbeamertemplate{frametitle}[default][center]
+\mode<presentation>
+{
+ \usetheme{Warsaw}      % or try Darmstadt, Madrid, Warsaw, ...
+ \usecolortheme{default} % or try albatross, beaver, crane, ...
+ \usefonttheme{default}  % or try serif, structurebold, ...
+ \setbeamertemplate{footline}[frame number]
+ \setbeamertemplate{caption}[numbered]
+}
+
+\usepackage[utf8]{inputenc}
+\usepackage{helvet}
+\usepackage{minted}
+
+% Great Commands
+\newcommand{\ig}[2]{\includegraphics[width=#1\linewidth]{#2}}
+\newcommand{\mybutton}[2]{\hyperlink{#1}{\beamerbutton{{#2}}}}
+\newcommand{\myvbutton}[2]{\vfill\hyperlink{#1}{\beamerbutton{{#2}}}}
+\newcommand{\code}[2]{\mintinline{#1}{#2}}
+\newcommand{\python}[1]{\code{python}{#1}}
+\newcommand{\bash}[1]{\code{bash}{#1}}
+\newcommand{\unnamedUrl}[1]{\href{#1}{\color{blue}{#1}}}
+\newcommand{\namedUrl}[2]{\href{#1}{\color{blue}{#2}}}
+\newcommand{\pygment}[3]{\inputminted[bgcolor=lightgray,linenos,fontsize=#1]{#2}{#3}}
+\newcommand{\pygmentLines}[5]{\inputminted[bgcolor=lightgray,linenos,fontsize=#1,firstline=#2,lastline=#3,autogobble]{#4}{#5}}
+
+% Color Scheme
+\definecolor{pittblue}{RGB}{28,41,87}
+\definecolor{pittgold}{RGB}{205,184,125}
+\setbeamercolor{structure}{fg=pittgold}
+\setbeamercolor{button}{bg=pittblue}
+
+\title[Unison Abilities]{{Introduction to Unison Abilities}}
+\author[Unison Abilities]{{Barry Moore II}}
+\institute[CRC]{Center for Research Computing \\ University of Pittsburgh}
+\date{}
+
+\beamertemplatenavigationsymbolsempty
+
+\begin{document}
+
+\begin{frame}{Getting the Slides}
+  \begin{itemize}
+    \item Download slides from
+      \namedUrl{https://github.com/chiroptical/unison-abilities/releases/latest/download/unison-abilities.pdf}{https://tinyurl.com/unisonabilities}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \begin{itemize}
+    \item Free Monads
+    \item Effect System
+    \item Unison Abilities
+  \end{itemize}
+\end{frame}
+
+\end{document}
