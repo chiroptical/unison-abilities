@@ -48,7 +48,7 @@
   \begin{itemize}
     \item Download slides from
       \namedUrl{https://github.com/chiroptical/unison-abilities/releases/latest/download/unison-abilities.pdf}{https://tinyurl.com/unisonabilities}
-    \item \namedUrl{https://github.com/chiroptical/unison-abilities}{Source}
+    \item \unnamedUrl{https://github.com/chiroptical/unison-abilities}
   \end{itemize}
 \end{frame}
 
@@ -85,7 +85,7 @@
 
 \begin{frame}{Encoding with Free Monads (Haskell)}
   \pygmentLines{\normalsize}{17}{21}{haskell}{code/Free.hs}
-  \vspace{-1cm}
+  \vspace{-0.5cm}
   \begin{itemize}
     \item Operation's return type on the left of \haskell{->}, \haskell{()} for
       \haskell{Put}
@@ -135,13 +135,13 @@
 
 \begin{frame}{Encoding using tagless final style}
   \begin{itemize}
-    \item Define a GADT to abstract over a representation (i.e. \haskell{State [a]})
+    \item Define a type class which abstracts over a representation (i.e. \haskell{State [a]})
   \end{itemize}
-  \pygmentLines{\normalsize}{16}{19}{haskell}{code/TaglessFinal.hs}
+  \pygmentLines{\normalsize}{14}{17}{haskell}{code/TaglessFinal.hs}
 \end{frame}
 
 \begin{frame}{Helper functions}
-  \pygmentLines{\normalsize}{28}{35}{haskell}{code/TaglessFinal.hs}
+  \pygmentLines{\normalsize}{26}{33}{haskell}{code/TaglessFinal.hs}
   \begin{itemize}
     \item We don't need to lift our primitives, but the compiler needs help
       with type inference
@@ -149,9 +149,9 @@
 \end{frame}
 
 \begin{frame}{Instance declaration}
-  \pygmentLines{\normalsize}{14}{14}{haskell}{code/TaglessFinal.hs}
+  \pygmentLines{\normalsize}{12}{12}{haskell}{code/TaglessFinal.hs}
   \vspace{-1cm}
-  \pygmentLines{\normalsize}{21}{26}{haskell}{code/TaglessFinal.hs}
+  \pygmentLines{\normalsize}{19}{24}{haskell}{code/TaglessFinal.hs}
   \vspace{-0.5cm}
   \begin{itemize}
     \item The implementation looks similar to free monad style
@@ -160,7 +160,7 @@
 \end{frame}
 
 \begin{frame}{Programs}
-  \pygmentLines{\scriptsize}{37}{51}{haskell}{code/TaglessFinal.hs}
+  \pygmentLines{\scriptsize}{35}{49}{haskell}{code/TaglessFinal.hs}
   \vspace{-0.5cm}
   \begin{itemize}
     \item This should look familiar!
@@ -168,7 +168,7 @@
 \end{frame}
 
 \begin{frame}{Running}
-  \pygmentLines{\scriptsize}{53}{57}{haskell}{code/TaglessFinal.hs}
+  \pygmentLines{\scriptsize}{51}{57}{haskell}{code/TaglessFinal.hs}
   \begin{itemize}
     \item Let's check out \bash{TaglessFinal.hs}
   \end{itemize}
