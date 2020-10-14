@@ -1,52 +1,57 @@
 #!/usr/bin/env stack
 -- stack --resolver lts-16.5 script --package transformers
 
-{-# language AllowAmbiguousTypes #-}
-{-# language GADTs #-}
-{-# language MultiParamTypeClasses #-}
-{-# language FlexibleInstances #-}
-{-# language TypeApplications #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeApplications #-}
 
 module TaglessFinal where
 
-import Control.Monad.Trans.State (State, get, modify, evalState)
+import Control.Monad.Trans.State (State)
+import qualified Control.Monad.Trans.State as S
 
-class Monad m => Stack repr m a where
-  sGet :: repr (m a)
-  sPut :: a -> repr ()
-  sPop :: repr (Maybe a)
+class Stack repr a where
+    sGet :: repr [a]
+    sPut :: a -> repr ()
+    sPop :: repr (Maybe a)
 
-instance Stack (State [Int]) [] Int where
-  sGet = get
-  sPut x = modify (x:)
-  sPop = do
-    xs <- get
-    case xs of
-      (y:_) -> modify tail >> pure (Just y)
-      _ -> pure Nothing
+instance Stack (State [Int]) Int where
+    sGet = S.get
+    sPut x = S.modify (x :)
+    sPop = S.get >>= \case
+        (x : xs) -> S.put xs >> pure (Just x)
+        _ -> pure Nothing
+
+put :: Int -> State [Int] ()
+put = sPut @(State [Int]) @Int
+
+get :: State [Int] [Int]
+get = sGet @(State [Int]) @Int 
+
+pop :: State [Int] (Maybe Int)
+pop = sPop @(State [Int]) @Int
 
 one :: State [Int] [Int]
-one = do
-  sPut @(State [Int]) @[] @Int 1
-  sPut @(State [Int]) @[] @Int 2
-  sGet @(State [Int]) @[] @Int
+one = put 1 >> put 2 >> get
 
 two :: State [Int] [Int]
 two = do
-  sPut @(State [Int]) @[] @Int 2
-  sPut @(State [Int]) @[] @Int 4
-  mx <- sPop @(State [Int]) @[] @Int
-  my <- sPop @(State [Int]) @[] @Int
-  case (mx, my) of
-    (Just x, Just y) -> sPut @(State [Int]) @[] @Int (x + y)
-  sGet @(State [Int]) @[] @Int
+    put 2
+    put 4
+    tup <- (,) <$> pop <*> pop
+    case tup of
+        (Just x, Just y) -> put (x + y)
+        _ -> pure ()
+    get
 
 three :: State [Int] (Maybe Int)
-three = do
-  sPop @(State [Int]) @[] @Int
+three = pop
 
 main :: IO ()
 main = do
-  print $ evalState one []
-  print $ evalState two []
-  print $ evalState three []
+    print $ S.evalState one []
+    print $ S.evalState two []
+    print $ S.evalState three []

@@ -20,6 +20,8 @@
 \newcommand{\myvbutton}[2]{\vfill\hyperlink{#1}{\beamerbutton{{#2}}}}
 \newcommand{\code}[2]{\mintinline{#1}{#2}}
 \newcommand{\python}[1]{\code{python}{#1}}
+\newcommand{\haskell}[1]{\code{haskell}{#1}}
+\newcommand{\txt}[1]{\code{text}{#1}}
 \newcommand{\bash}[1]{\code{bash}{#1}}
 \newcommand{\unnamedUrl}[1]{\href{#1}{\color{blue}{#1}}}
 \newcommand{\namedUrl}[2]{\href{#1}{\color{blue}{#2}}}
@@ -58,6 +60,187 @@
     \item Effect System
     \item Unison Abilities
   \end{itemize}
+\end{frame}
+
+\begin{frame}{The Effect in Question}
+  \begin{itemize}
+    \item Imagine a \haskell{Stack} effect with the following members
+      \begin{itemize}
+          \item \haskell{get} the current stack
+          \item \haskell{put} a value on top of the stack
+          \item \haskell{pop} the top from the stack (if it exists)
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Running a \bash{stack} script}
+  \pygmentLines{\scriptsize}{1}{2}{haskell}{code/Free.hs}
+  \begin{itemize}
+    \item Run with \bash{stack <filename>}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Free Monads in Haskell}
+  \pygmentLines{\normalsize}{17}{21}{haskell}{code/Free.hs}
+  \begin{itemize}
+    \item Return type on the left of \haskell{->}, \haskell{()} for
+      \haskell{Put}
+    \item You get a Monad for ``free'' by deriving \haskell{Functor} and
+      using the \haskell{Free} typeclass
+  \end{itemize}
+  \pygmentLines{\normalsize}{23}{23}{haskell}{code/Free.hs}
+\end{frame}
+
+\begin{frame}{Smart Constructors}
+  \pygmentLines{\normalsize}{25}{32}{haskell}{code/Free.hs}
+  \begin{itemize}
+    \item Lift your operations into \haskell{Free}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Interpreter}
+  \pygmentLines{\scriptsize}{10}{11}{haskell}{code/Free.hs}
+  \vspace{-1cm}
+  \pygmentLines{\normalsize}{34}{40}{haskell}{code/Free.hs}
+  \vspace{-0.5cm}
+  \begin{itemize}
+    \item This is a natural transformation to interpret the \haskell{Stack}
+    \item \haskell{Free} is a Monad, so we can use \haskell{>>=, >>}
+    \item \haskell{iterM} evaluates the functorial context away
+    \item \haskell{k} is a continuation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Encoding Programs}
+  \pygmentLines{\scriptsize}{42}{56}{haskell}{code/Free.hs}
+  \vspace{-0.5cm}
+  \begin{itemize}
+    \item \haskell{one} -- \haskell{[2, 1]}
+    \item \haskell{two} -- \haskell{[6]}
+    \item \haskell{three} -- \haskell{Nothing}
+    \item Each program returns a \haskell{State} computation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Run the \haskell{State} computation}
+  \pygmentLines{\scriptsize}{58}{62}{haskell}{code/Free.hs}
+  \begin{itemize}
+    \item Let's check out \bash{Free.hs}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Tagless Final}
+  \begin{itemize}
+    \item Warning: writing programs for this effect is brutal
+  \end{itemize}
+  \pygmentLines{\normalsize}{15}{18}{haskell}{code/TaglessFinal.hs}
+  \begin{itemize}
+    \item Define a GADT to abstract over a representation (i.e. \haskell{State [a]})
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Smart constructors}
+  \pygmentLines{\normalsize}{28}{35}{haskell}{code/TaglessFinal.hs}
+  \begin{itemize}
+    \item We don't need to lift our primitives, but the compiler needs help
+      with type inference
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Instance declaration}
+  \pygmentLines{\normalsize}{21}{26}{haskell}{code/TaglessFinal.hs}
+  \begin{itemize}
+    \item Implementation looks very similar to the Free Monad, but no need to
+      deal with a continuation
+    \item Here, \haskell{get, modify} are from \haskell{Control.Monad.Trans.State}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Programs}
+  \pygmentLines{\scriptsize}{37}{51}{haskell}{code/TaglessFinal.hs}
+  \vspace{-0.5cm}
+  \begin{itemize}
+    \item This should look familiar!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Running}
+  \pygmentLines{\scriptsize}{53}{57}{haskell}{code/TaglessFinal.hs}
+  \begin{itemize}
+    \item Let's check out \bash{TaglessFinal.hs}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Free Monad vs. Tagless Final}
+  \begin{itemize}
+    \item Program implementations stayed the same
+    \item We defined the effects and their handlers in different ways
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Unison Abilities}
+  \begin{itemize}
+    \item The abilities system in Unison is extensible, need polysemy or
+      similar to get extensibility
+    \item The encoding of \haskell{Stack} in Unison looks most like Tagless Final style
+    \item The implementation is based on a language called Frank from
+      \unnamedUrl{https://arxiv.org/pdf/1611.09259.pdf}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The \textit{ability}}
+  \pygmentLines{\scriptsize}{41}{44}{haskell}{code/ability.u}
+  \begin{itemize}
+    \item We don't need the \haskell{repr} from before!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Interpreter}
+  \pygmentLines{\footnotesize}{11}{21}{text}{code/ability.u}
+\end{frame}
+
+\begin{frame}{Concepts}
+  \begin{itemize}
+    \item Delayed computation: \txt{'a} $\sim$ \txt{() -> a}
+    \begin{itemize}
+      \item Can be forced with \txt{!}
+    \end{itemize}
+    \item Can match \txt{Request {Ability a} b} with,
+      \begin{itemize}
+        \item An ability member and a continuation e.g. \txt{{Ability.member -> k}}
+        \begin{itemize}
+          \item The input to \txt{k} must match the return type of
+            \txt{Ability.member}
+        \end{itemize}
+        \item A pure value e.g. \txt{{x}} with \txt{x : b}
+      \end{itemize}
+    \item Handling requests: \txt{handle k ... with h <input>}, the input to
+      \txt{h} is the new state
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Interpreter}
+  \pygmentLines{\footnotesize}{11}{21}{text}{code/ability.u}
+\end{frame}
+
+\begin{frame}{Programs}
+  \pygmentLines{\footnotesize}{23}{40}{text}{code/ability.u}
+\end{frame}
+
+\begin{frame}{Why are these delayed?}
+  \begin{itemize}
+    \item ...
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Running}
+  \pygmentLines{\footnotesize}{2}{4}{text}{code/ability.u}
+  \begin{itemize}
+    \item Let's check out \bash{ability.u}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{...}
 \end{frame}
 
 \end{document}

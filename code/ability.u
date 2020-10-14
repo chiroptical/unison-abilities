@@ -3,14 +3,22 @@
 > Stack.run Stack.two
 > Stack.run Stack.three
 
-Stack.three : '{Stack List Nat} [Nat]
-Stack.three = 'let
-  Stack.put 1
-  match Stack.pop with
-    None -> []
-    Some x -> [x]
-
 -----
+
+-- The interpreter of `Stack` for `List a`
+-- `k _` the hole will always be the return type for the ability method, `get : f a`
+-- `h _` the hole will be an updated version of the accumulator
+Stack.run : '{Stack List a} b -> b
+Stack.run stack =
+  h : [a] -> Request {Stack List a} b -> b
+  h acc = cases 
+    {Stack.get -> k} -> handle k acc with h acc
+    {Stack.put x -> k} -> handle k () with h (x +: acc)
+    {Stack.pop -> k} -> match acc with
+      x +: xs -> handle k (Some x) with h xs
+      _ -> handle k None with h []
+    {x} -> x
+  handle !stack with h []
 
 Stack.one : '{Stack List Nat} [Nat]
 Stack.one = 'let
@@ -27,19 +35,9 @@ Stack.two = 'let
     _ -> ()
   Stack.get
 
--- The interpreter of `Stack` for `List a`
-Stack.run : '{Stack List a} [a] -> [a]
-Stack.run stack =
-  h acc = cases 
-    -- `k _` the hole will always be the return type for the ability method, `get : f a`
-    -- `h _` the hole will be an updated version of the accumulator
-    {Stack.get -> k} -> handle k acc with h acc
-    {Stack.put x -> k} -> handle k () with h (x +: acc)
-    {Stack.pop -> k} -> match acc with
-      x +: xs -> handle k (Some x) with h xs
-      _ -> handle k None with h []
-    _ -> acc
-  handle !stack with h []
+Stack.three : '{Stack List Nat} (Optional Nat)
+Stack.three = 'let
+  Stack.pop
 
 ability Stack f a where
   get : f a
