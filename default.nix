@@ -29,8 +29,8 @@ pkgs.stdenv.mkDerivation {
   name = "unison-abilities";
   buildInputs = inputs;
   src = builtins.fetchurl {
-    url = "https://github.com/chiroptical/unison-abilities/archive/v0.1a0.tar.gz";
-    sha256 = "0qcp7zhhssip3an4bzfj6s9sk62zxzhzq45m2v2y58cwnx2yix12";
+    url = "https://github.com/chiroptical/unison-abilities/archive/v0.1.tar.gz";
+    sha256 = "1fnd4dg7yyhy3jy30jjidy03xa1byb3g89nqg57qksqls7jkpz0k";
   };
   buildPhase = ''
     source $stdenv/setup
