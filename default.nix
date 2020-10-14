@@ -18,7 +18,8 @@ let
         xstring
         framed
         float
-        helvetic;
+        helvetic
+        cancel;
     })
     pkgs.python38Packages.pygments
     pkgs.which

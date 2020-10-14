@@ -20,7 +20,8 @@ pkgs.mkShell {
           xstring
           framed
           float
-          helvetic;
+          helvetic
+          cancel;
       })
       pkgs.python38Packages.pygments
     ];

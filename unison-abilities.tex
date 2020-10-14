@@ -13,6 +13,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{helvet}
 \usepackage{minted}
+\usepackage{cancel}
 
 % Great Commands
 \newcommand{\ig}[2]{\includegraphics[width=#1\linewidth]{#2}}
@@ -47,6 +48,7 @@
   \begin{itemize}
     \item Download slides from
       \namedUrl{https://github.com/chiroptical/unison-abilities/releases/latest/download/unison-abilities.pdf}{https://tinyurl.com/unisonabilities}
+    \item \namedUrl{https://github.com/chiroptical/unison-abilities}{Source}
   \end{itemize}
 \end{frame}
 
@@ -56,46 +58,48 @@
 
 \begin{frame}{Outline}
   \begin{itemize}
-    \item Free Monads
-    \item Effect System
-    \item Unison Abilities
+    \item Choose an effect to encode
+    \item Free monad encoding
+    \item Tagless final encoding
+    \item Encoding using Unison abilities
   \end{itemize}
 \end{frame}
 
 \begin{frame}{The Effect in Question}
   \begin{itemize}
-    \item Imagine a \haskell{Stack} effect with the following members
+    \item Imagine a \haskell{Stack} effect with the following operations:
       \begin{itemize}
           \item \haskell{get} the current stack
           \item \haskell{put} a value on top of the stack
-          \item \haskell{pop} the top from the stack (if it exists)
+          \item \haskell{pop} the top from the stack (if any exist)
       \end{itemize}
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Running a \bash{stack} script}
+\begin{frame}{Haskell code is just a \bash{stack} script}
   \pygmentLines{\scriptsize}{1}{2}{haskell}{code/Free.hs}
   \begin{itemize}
-    \item Run with \bash{stack <filename>}
+    \item Run them with \bash{stack <filename>}
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Free Monads in Haskell}
+\begin{frame}{Encoding with Free Monads (Haskell)}
   \pygmentLines{\normalsize}{17}{21}{haskell}{code/Free.hs}
+  \vspace{-1cm}
   \begin{itemize}
-    \item Return type on the left of \haskell{->}, \haskell{()} for
+    \item Operation's return type on the left of \haskell{->}, \haskell{()} for
       \haskell{Put}
     \item You get a Monad for ``free'' by deriving \haskell{Functor} and
-      using the \haskell{Free} typeclass
+      using the \haskell{Free} type class
   \end{itemize}
   \pygmentLines{\normalsize}{23}{23}{haskell}{code/Free.hs}
 \end{frame}
 
 \begin{frame}{Smart Constructors}
-  \pygmentLines{\normalsize}{25}{32}{haskell}{code/Free.hs}
   \begin{itemize}
-    \item Lift your operations into \haskell{Free}
+    \item Define ``smart constructors'' to lift your operations into \haskell{Free}
   \end{itemize}
+  \pygmentLines{\normalsize}{25}{32}{haskell}{code/Free.hs}
 \end{frame}
 
 \begin{frame}{The Interpreter}
@@ -104,14 +108,14 @@
   \pygmentLines{\normalsize}{34}{40}{haskell}{code/Free.hs}
   \vspace{-0.5cm}
   \begin{itemize}
-    \item This is a natural transformation to interpret the \haskell{Stack}
+    \item Natural transformation required to interpret the \haskell{Stack}
     \item \haskell{Free} is a Monad, so we can use \haskell{>>=, >>}
     \item \haskell{iterM} evaluates the functorial context away
     \item \haskell{k} is a continuation
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Encoding Programs}
+\begin{frame}{Encoding programs with SCs}
   \pygmentLines{\scriptsize}{42}{56}{haskell}{code/Free.hs}
   \vspace{-0.5cm}
   \begin{itemize}
@@ -122,24 +126,21 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Run the \haskell{State} computation}
-  \pygmentLines{\scriptsize}{58}{62}{haskell}{code/Free.hs}
+\begin{frame}{Running a \haskell{State} computation}
+  \pygmentLines{\normalsize}{58}{62}{haskell}{code/Free.hs}
   \begin{itemize}
     \item Let's check out \bash{Free.hs}
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Tagless Final}
-  \begin{itemize}
-    \item Warning: writing programs for this effect is brutal
-  \end{itemize}
-  \pygmentLines{\normalsize}{15}{18}{haskell}{code/TaglessFinal.hs}
+\begin{frame}{Encoding using tagless final style}
   \begin{itemize}
     \item Define a GADT to abstract over a representation (i.e. \haskell{State [a]})
   \end{itemize}
+  \pygmentLines{\normalsize}{16}{19}{haskell}{code/TaglessFinal.hs}
 \end{frame}
 
-\begin{frame}{Smart constructors}
+\begin{frame}{Helper functions}
   \pygmentLines{\normalsize}{28}{35}{haskell}{code/TaglessFinal.hs}
   \begin{itemize}
     \item We don't need to lift our primitives, but the compiler needs help
@@ -148,11 +149,13 @@
 \end{frame}
 
 \begin{frame}{Instance declaration}
+  \pygmentLines{\normalsize}{14}{14}{haskell}{code/TaglessFinal.hs}
+  \vspace{-1cm}
   \pygmentLines{\normalsize}{21}{26}{haskell}{code/TaglessFinal.hs}
+  \vspace{-0.5cm}
   \begin{itemize}
-    \item Implementation looks very similar to the Free Monad, but no need to
-      deal with a continuation
-    \item Here, \haskell{get, modify} are from \haskell{Control.Monad.Trans.State}
+    \item The implementation looks similar to free monad style
+    \item No continuation makes the code look a bit simpler
   \end{itemize}
 \end{frame}
 
@@ -174,29 +177,27 @@
 \begin{frame}{Free Monad vs. Tagless Final}
   \begin{itemize}
     \item Program implementations stayed the same
-    \item We defined the effects and their handlers in different ways
+    \item Free monad style requires a continuation
+    \item Tagless final style has some type inference issues in this case
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Unison Abilities}
   \begin{itemize}
-    \item The abilities system in Unison is extensible, need polysemy or
-      similar to get extensibility
-    \item The encoding of \haskell{Stack} in Unison looks most like Tagless Final style
-    \item The implementation is based on a language called Frank from
+    \item The abilities system in Unison is extensible, similar to polysemy,
+      fused-effects, or eff
+    \item The encoding of \haskell{Stack} in abilities looks a lot like tagless
+      final style
+    \item The implementation is based on a language called Frank, see
       \unnamedUrl{https://arxiv.org/pdf/1611.09259.pdf}
   \end{itemize}
 \end{frame}
 
 \begin{frame}{The \textit{ability}}
-  \pygmentLines{\scriptsize}{41}{44}{haskell}{code/ability.u}
+  \pygmentLines{\scriptsize}{42}{45}{haskell}{code/ability.u}
   \begin{itemize}
     \item We don't need the \haskell{repr} from before!
   \end{itemize}
-\end{frame}
-
-\begin{frame}{Interpreter}
-  \pygmentLines{\footnotesize}{11}{21}{text}{code/ability.u}
 \end{frame}
 
 \begin{frame}{Concepts}
@@ -205,7 +206,7 @@
     \begin{itemize}
       \item Can be forced with \txt{!}
     \end{itemize}
-    \item Can match \txt{Request {Ability a} b} with,
+    \item A \txt{Request {Ability a} b} can be,
       \begin{itemize}
         \item An ability member and a continuation e.g. \txt{{Ability.member -> k}}
         \begin{itemize}
@@ -214,7 +215,10 @@
         \end{itemize}
         \item A pure value e.g. \txt{{x}} with \txt{x : b}
       \end{itemize}
-    \item Handling requests: \txt{handle k ... with h <input>}, the input to
+    \item A recursive function \txt{h} is typically used to evaluate programs
+      to their \textit{pure} values
+    \item \txt{h}'s first argument will simply be an accumulator
+    \item Handling requests: \txt{handle k _ with h _}, the input to
       \txt{h} is the new state
   \end{itemize}
 \end{frame}
@@ -229,12 +233,11 @@
 
 \begin{frame}{Why are these delayed?}
   \begin{itemize}
-    \item Abilities can not be attached to values, i.e. \txt{{Ability a} b}
+    \item Abilities can not be attached to values, i.e. \xcancel{\txt{{Ability a} b}}
     \item Abilities must be on the right of an arrow
-    \item We can delay a computation to add an ability to a value
+    \item We must delay the computation to use the ability
     \begin{itemize}
-      \item \txt{'(a)}
-      \item \txt{'let} can be used in front of a block
+      \item \txt{'let} is used in front of the block
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -246,7 +249,8 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{...}
+\begin{frame}{Questions}
+  \Huge Questions?
 \end{frame}
 
 \end{document}
